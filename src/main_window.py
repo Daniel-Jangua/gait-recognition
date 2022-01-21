@@ -81,7 +81,7 @@ class MainWindow():
         self.btn_refesh.image = photo
         self.btn_refesh.grid(row=6, column=0, pady=10)
 
-        img = Image.open('./assets/avatar.png')
+        img = Image.open('./assets/foto_cracha.png')
         img = img.resize((200,200), Image.ANTIALIAS)
         photo = ImageTk.PhotoImage(img)
         self.lbl_imagem = tk.Label(fr_feed, image=photo, width=200, height=200, borderwidth=1, relief='solid')
@@ -111,11 +111,16 @@ class MainWindow():
     def forms_cad_funcionario(self):
         FormFuncionario(self.window, '600x400', 'Cadastro de Funcionários') 
 
+    def write_to_file(self, filename, data):
+        with open(filename, 'wb') as f:
+            f.write(data)
+
     def update_logs(self):
         label_status = {0 : 'NEGADO', 1 : 'AUTORIZADO'}
         color_status = {0 : 'red', 1 : 'green'}
         df = self.log_service.get_df_logs()
         last_log = df.iloc[-1]
+        blob_img = last_log['foto_cracha']
         self.str_nome.set(last_log['nome'])
         self.str_cargo.set(last_log['descricao'])
         self.str_datetime.set('Data: ' + last_log['data_det'])
@@ -128,6 +133,13 @@ class MainWindow():
             if row['data_det'] is not None:
                 self.grid_hist.insert_row((row['data_det'], row['nome'], row['descricao'], label_status[int(row['autorizado'])]), iid)
                 iid += 1
+        if blob_img is not None and str(blob_img) != '' and str(blob_img) != 'NULL':
+            self.write_to_file('./assets/foto_cracha.png', blob_img)
+        img = Image.open('./assets/foto_cracha.png')
+        img = img.resize((200,200), Image.ANTIALIAS)
+        photo = ImageTk.PhotoImage(img)
+        self.lbl_imagem.configure(image=photo)
+        self.lbl_imagem.image = photo
         if not autorizado:
             t = threading.Thread(target=messagebox.showwarning, args=('Alerta de Segurança', 'Atenção! Acesso não autorizado detectado.',))
             t.start()

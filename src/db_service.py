@@ -12,5 +12,10 @@ class DbService():
         self.conn.commit()
         return cur, result
     
+    def insert_query(self, query, data):
+        cur = self.conn.cursor()
+        cur.execute(query, data)
+        self.conn.commit()
+    
     def close_conn(self):
         self.conn.close()

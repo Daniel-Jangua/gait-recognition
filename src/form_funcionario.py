@@ -13,6 +13,7 @@ class FormFuncionario(Toplevel):
         self.title(title)
         self.resizable(False, False)
         self.db = DbService('database.gait')
+        self.filename = './assets/avatar.png'
 
         lbl_nome = Label(self, text='Nome Completo:', font=('Arial 11 bold'))
         lbl_cargo = Label(self, text='Cargo:', font=('Arial 11 bold'))
@@ -30,7 +31,7 @@ class FormFuncionario(Toplevel):
         self.btn_img.grid(row=0, column=0, pady=10, sticky='E')
 
         fr_img = Frame(self)
-        img = Image.open('./assets/logo2.png')
+        img = Image.open(self.filename)
         img = img.resize((200,200), Image.ANTIALIAS)
         photo = ImageTk.PhotoImage(img)
         self.lbl_imagem = Label(fr_img, image=photo, width=200, height=200)
@@ -55,13 +56,17 @@ class FormFuncionario(Toplevel):
         if nome == '':
             messagebox.showerror(title='Falha no Cadastro', message='Erro ao cadastrar funcionário!', parent=self)
             return
+        blob_img = self.to_binary_data(self.filename)
         query = """INSERT INTO funcionarios (nome, id_cargo, foto_cracha) 
-                    VALUES ('{}', {}, NULL)""".format(nome, cargo)
+                    VALUES (?, ?, ?)"""
+        data = (nome, cargo, blob_img)
         try:
-            self.db.execute_query(query)
+            self.db.insert_query(query, data)
             messagebox.showinfo(title='Sucesso', message='Funcionário cadastrado com sucesso!', parent=self)
             self.entry_nome.delete(0, END)
             self.cb_cargo.current(0)
+            self.filename = './assets/avatar.png'
+            self.update_lbl_img()
         except Exception as e:
             messagebox.showerror(title='Falha no Cadastro', message='Erro ao cadastrar funcionário!\n' + str(e), parent=self)
 
@@ -73,8 +78,17 @@ class FormFuncionario(Toplevel):
                                                         ("Imagens", "*.png*")),
                                             parent=self)
         if len(filename):
-            img = Image.open(filename)
-            img = img.resize((200,200), Image.ANTIALIAS)
-            photo = ImageTk.PhotoImage(img)
-            self.lbl_imagem.configure(image=photo)
-            self.lbl_imagem.image = photo
+            self.filename = filename
+            self.update_lbl_img()
+    
+    def to_binary_data(self, filename):
+        with open(filename, 'rb') as f:
+            blob_data = f.read()
+        return blob_data
+    
+    def update_lbl_img(self):
+        img = Image.open(self.filename)
+        img = img.resize((200,200), Image.ANTIALIAS)
+        photo = ImageTk.PhotoImage(img)
+        self.lbl_imagem.configure(image=photo)
+        self.lbl_imagem.image = photo
