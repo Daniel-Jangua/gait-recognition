@@ -8,6 +8,7 @@ from tkvideo import tkvideo
 from form_cargo import FormCargo
 from table_grid import TableGrid
 from form_usuario import FormUsuario
+from form_funcionario import FormFuncionario
 from logs import Logs
 import threading
 
@@ -41,7 +42,7 @@ class MainWindow():
         
         cad_menu = tk.Menu(menubar, tearoff=0)
         cad_menu.add_command(label='Usuários', font=('Arial', 11), command=self.forms_cad_usuario)
-        cad_menu.add_command(label='Funcionários', font=('Arial', 11))
+        cad_menu.add_command(label='Funcionários', font=('Arial', 11), command=self.forms_cad_funcionario)
         cad_menu.add_command(label='Cargos', font=('Arial', 11), command=self.forms_cad_cargo)
         menubar.add_cascade(label='Cadastros', menu=cad_menu, font=('Arial', 11))
 
@@ -106,6 +107,9 @@ class MainWindow():
     
     def forms_cad_cargo(self):
         FormCargo(self.window, '450x150', 'Cadastro de Cargos')
+    
+    def forms_cad_funcionario(self):
+        FormFuncionario(self.window, '600x400', 'Cadastro de Funcionários') 
 
     def update_logs(self):
         label_status = {0 : 'NEGADO', 1 : 'AUTORIZADO'}
@@ -115,16 +119,20 @@ class MainWindow():
         self.str_nome.set(last_log['nome'])
         self.str_cargo.set(last_log['descricao'])
         self.str_datetime.set('Data: ' + last_log['data_det'])
-        autorizado = last_log['autorizado']
+        autorizado = int(last_log['autorizado'])
         self.str_status.set(label_status[autorizado])
         self.lbl_status.configure(foreground=color_status[autorizado])
         self.grid_hist.delete_rows()
         iid = 0
         for _, row in df.iterrows():
-            self.grid_hist.insert_row((row['data_det'], row['nome'], row['descricao'], label_status[row['autorizado']]), iid)
-            iid += 1
+            if row['data_det'] is not None:
+                self.grid_hist.insert_row((row['data_det'], row['nome'], row['descricao'], label_status[int(row['autorizado'])]), iid)
+                iid += 1
         if not autorizado:
             t = threading.Thread(target=messagebox.showwarning, args=('Alerta de Segurança', 'Atenção! Acesso não autorizado detectado.',))
             t.start()
 
-        
+# if __name__ == '__main__':
+#     root = MainWindow('1225x600', 'GaitID - ')
+#     form = FormFuncionario(root.window, '450x150', 'Cadastro de Usuários') 
+#     root.window.mainloop()     

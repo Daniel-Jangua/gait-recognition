@@ -12,8 +12,8 @@ class FormCargo(Toplevel):
         self.resizable(False, False)
         self.db = DbService('database.gait')
 
-        lbl_desc = Label(self, text='Descrição:', font=('Arial 11'))
-        lbl_acesso = Label(self, text='Nível de Acesso:', font=('Arial 11'))
+        lbl_desc = Label(self, text='Descrição:', font=('Arial 11 bold'))
+        lbl_acesso = Label(self, text='Nível de Acesso:', font=('Arial 11 bold'))
         self.cb_acesso = ttk.Combobox(self, values = [0, 1, 2], font=('Arial 10'), width=35)
         self.cb_acesso.current(0)
         self.entry_desc = Entry(self, width=40, font=('Arial 10'))

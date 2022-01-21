@@ -11,8 +11,8 @@ class FormUsuario(Toplevel):
         self.resizable(False, False)
         self.db = DbService('database.gait')
 
-        lbl_nome = Label(self, text='Nome de Usuário:', font=('Arial 11'))
-        lbl_senha = Label(self, text='Senha:', font=('Arial 11'))
+        lbl_nome = Label(self, text='Nome de Usuário:', font=('Arial 11 bold'))
+        lbl_senha = Label(self, text='Senha:', font=('Arial 11 bold'))
         self.entry_nome = Entry(self, width=40, font=('Arial 10'))
         self.entry_senha = Entry(self, width=40, font=('Arial 10'), show='*')
         lbl_nome.grid(row=0, column=0, padx=10, pady=10)
