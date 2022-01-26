@@ -1622,19 +1622,19 @@ static esp_err_t start_avi() {
   time(&now);
   localtime_r(&now, &timeinfo);
 
-  strftime(strftime_buf2, sizeof(strftime_buf2), "/%Y%m%d", &timeinfo);
-  SD_MMC.mkdir(strftime_buf2);
+  //strftime(strftime_buf2, sizeof(strftime_buf2), "/%Y%m%d", &timeinfo);
+  //SD_MMC.mkdir(strftime_buf2);
 
   strftime(strftime_buf, sizeof(strftime_buf), "%F %H.%M.%S", &timeinfo);
 
   if (framesize == 6) {
-    sprintf(fname, "/sdcard%s/%s %s vga_Q%d_I%d_L%d_S%d.avi", strftime_buf2, devname, strftime_buf, quality, capture_interval, xlength, xspeed);
+    sprintf(fname, "/sdcard/%s %s vga_Q%d_I%d_L%d_S%d.avi", devname, strftime_buf, quality, capture_interval, xlength, xspeed);
   } else if (framesize == 7) {
-    sprintf(fname, "/sdcard%s/%s %s svga_Q%d_I%d_L%d_S%d.avi", strftime_buf2, devname,  strftime_buf, quality, capture_interval, xlength, xspeed);
+    sprintf(fname, "/sdcard/%s %s svga_Q%d_I%d_L%d_S%d.avi", devname,  strftime_buf, quality, capture_interval, xlength, xspeed);
   } else if (framesize == 10) {
-    sprintf(fname, "/sdcard%s/%s %s uxga_Q%d_I%d_L%d_S%d.avi", strftime_buf2, devname, strftime_buf, quality, capture_interval, xlength, xspeed);
+    sprintf(fname, "/sdcard/%s %s uxga_Q%d_I%d_L%d_S%d.avi", devname, strftime_buf, quality, capture_interval, xlength, xspeed);
   } else  if (framesize == 5) {
-    sprintf(fname, "/sdcard%s/%s %s cif_Q%d_I%d_L%d_S%d.avi", strftime_buf2, devname, strftime_buf, quality, capture_interval, xlength, xspeed);
+    sprintf(fname, "/sdcard/%s %s cif_Q%d_I%d_L%d_S%d.avi", devname, strftime_buf, quality, capture_interval, xlength, xspeed);
   } else {
     Serial.println("Wrong framesize");
   }

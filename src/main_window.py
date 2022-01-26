@@ -9,16 +9,18 @@ from form_cargo import FormCargo
 from table_grid import TableGrid
 from form_usuario import FormUsuario
 from form_funcionario import FormFuncionario
+from form_registro import FormRegistro
 from logs import Logs
 import threading
 
 class MainWindow():
 
-    def __init__(self, size, title):
+    def __init__(self, size, title, http):
         self.window = ThemedTk(theme='breeze')
         self.window.resizable(False, False)
         self.video_name = './assets/last_det.mp4'
         self.log_service = Logs()
+        self.http = http
 
         s = ttk.Style()
         s.configure('TNotebook.Tab', font=('Arial','11','bold') )
@@ -38,7 +40,6 @@ class MainWindow():
         self.col_names = ['Data-Hora', 'Funcionário', 'Cargo', 'Status']
         self.grid_hist = TableGrid(self.tab_hist, self.table_cols, self.col_names, 300)
         self.grid_hist.pack()
-        #self.grid_hist.insert_row(('20/01/22 20:15:10', 'João da Silva', 'Gerente', 'Autorizado'))
         
         cad_menu = tk.Menu(menubar, tearoff=0)
         cad_menu.add_command(label='Usuários', font=('Arial', 11), command=self.forms_cad_usuario)
@@ -46,7 +47,7 @@ class MainWindow():
         cad_menu.add_command(label='Cargos', font=('Arial', 11), command=self.forms_cad_cargo)
         menubar.add_cascade(label='Cadastros', menu=cad_menu, font=('Arial', 11))
 
-        menubar.add_command(label='Registro', font=('Arial', 11))
+        menubar.add_command(label='Registro', font=('Arial', 11), command=self.forms_register)
 
         search_menu = tk.Menu(menubar, tearoff=0)
         search_menu.add_command(label='Funcionários', font=('Arial', 11))
@@ -109,7 +110,10 @@ class MainWindow():
         FormCargo(self.window, '450x150', 'Cadastro de Cargos')
     
     def forms_cad_funcionario(self):
-        FormFuncionario(self.window, '600x400', 'Cadastro de Funcionários') 
+        FormFuncionario(self.window, '600x400', 'Cadastro de Funcionários')
+
+    def forms_register(self):
+        FormRegistro(self.window, '640x160', 'Registro de Templates', self.http)
 
     def write_to_file(self, filename, data):
         with open(filename, 'wb') as f:

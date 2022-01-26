@@ -13,15 +13,6 @@ class Login():
 
         self.db_service = DbService('database.gait')
 
-        # w = int(size.split('x')[0])
-        # h = int(size.split('x')[1])
-        # ws = self.window.winfo_screenwidth()
-        # hs = self.window.winfo_screenheight()
-
-        # x = (ws/2) - (w/2)
-        # y = (hs/2) - (h/2)
-
-        # self.window.geometry('%dx%d+%d+%d' % (w, h, x, y))
         self.window.geometry(size)
         self.window.title(title)
 
@@ -67,14 +58,13 @@ class Login():
         if len(result):
             self.window.destroy()
             self.db_service.close_conn()
-            app = MainWindow('1225x600', 'GaitID - ' + nome)
+            app = MainWindow('1225x600', 'GaitID - ' + nome, '')
             app.window.mainloop()
         else:
             messagebox.showerror(title='Falha no Login', message='Usuário ou Senha incorreto(s)!')
             self.entry_login.delete(0, END)
             self.entry_senha.delete(0, END)
         
-
 if __name__ == '__main__':
     login = Login('400x150', 'GaitID - Login')
     login.window.mainloop()
