@@ -58,7 +58,7 @@ class Login():
         if len(result):
             self.window.destroy()
             self.db_service.close_conn()
-            app = MainWindow('1225x600', 'GaitID - ' + nome, '')
+            app = MainWindow('1225x600', 'GaitID - ' + nome, 'http://5922-130-211-242-205.ngrok.io')
             app.window.mainloop()
         else:
             messagebox.showerror(title='Falha no Login', message='Usuário ou Senha incorreto(s)!')

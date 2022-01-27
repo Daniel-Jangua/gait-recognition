@@ -3,7 +3,7 @@ from tkinter import messagebox
 from tkinter import ttk
 from tkinter import filedialog
 from db_service import DbService
-import os, requests
+import os, requests, threading
 
 class FormRegistro(Toplevel):
 
@@ -14,7 +14,9 @@ class FormRegistro(Toplevel):
         self.resizable(False, False)
         self.db = DbService('database.gait')
         self.str_folder = StringVar()
+        self.str_btn = StringVar()
         self.str_folder.set('Selecione uma pasta de templates.')
+        self.str_btn.set('Registrar Template')
         self.http = http
 
         lbl_funcioanrio = Label(self, text='Funcionário:', font=('Arial 11 bold'))
@@ -23,7 +25,7 @@ class FormRegistro(Toplevel):
         self.cb_funcionario.current(0)
         self.lbl_folder = Label(self, textvariable=self.str_folder, font=('Arial 11 bold'), width=30)
         self.btn_buscar = Button(self, text='Buscar Template', font=('Arial', 10), width=14, command=self.buscar_folder)
-        self.btn_registrar = Button(self, text='Registrar Template', font=('Arial', 10), width=14, command=self.register_desc)
+        self.btn_registrar = Button(self, textvariable=self.str_btn, font=('Arial', 10), width=14, command=self.thread_register)
 
         lbl_funcioanrio.grid(row=0, column=0, padx=10, pady=10)
         self.cb_funcionario.grid(row=0, column=1, padx=10, pady=10)
@@ -60,14 +62,24 @@ class FormRegistro(Toplevel):
 
     def register_desc(self):
         try:
+            db_service = DbService('database.gait')
             descriptor = self.create_descriptors()
             if not descriptor:
                 raise
             id_func = int(self.cb_funcionario.get().split('-')[0])
-            query = """INSERT INTO templates (id_funcionario, descritor) VALUES ({}, '{}')""".format(id_func, str(descriptor))
-            self.db.execute_query(query)
+            query = """INSERT INTO templates (id_funcionario, descritor) VALUES ({}, "{}")""".format(id_func, str(descriptor))
+            db_service.execute_query(query)
             messagebox.showinfo(title='Sucesso', message='Template registrado com sucesso!', parent=self)
             self.cb_funcionario.current(0)
         except Exception as e:
             messagebox.showerror(title='Falha no Registro', message='Erro ao registrar template!\n' + str(e), parent=self)
+        finally:
+            self.str_btn.set('Registrar Template')
+            self.btn_registrar.configure(state=NORMAL)
+    
+    def thread_register(self):
+        self.str_btn.set('Aguarde...')
+        self.btn_registrar.configure(state=DISABLED)
+        t = threading.Thread(target=self.register_desc)
+        t.start()
     

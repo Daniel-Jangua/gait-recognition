@@ -5,6 +5,8 @@ from tkinter import messagebox
 from ttkthemes import ThemedTk
 from PIL import Image, ImageTk
 from tkvideo import tkvideo
+from busca_cargos import BuscaCargos
+from busca_func import BuscaFuncionario
 from form_cargo import FormCargo
 from table_grid import TableGrid
 from form_usuario import FormUsuario
@@ -50,8 +52,8 @@ class MainWindow():
         menubar.add_command(label='Registro', font=('Arial', 11), command=self.forms_register)
 
         search_menu = tk.Menu(menubar, tearoff=0)
-        search_menu.add_command(label='Funcionários', font=('Arial', 11))
-        search_menu.add_command(label='Cargos', font=('Arial', 11))
+        search_menu.add_command(label='Funcionários', font=('Arial', 11), command=self.busca_func)
+        search_menu.add_command(label='Cargos', font=('Arial', 11), command=self.busca_cargos)
         menubar.add_cascade(label='Consultas', menu=search_menu, font=('Arial', 11))
 
         about_menu = tk.Menu(menubar, tearoff=0)
@@ -114,6 +116,12 @@ class MainWindow():
 
     def forms_register(self):
         FormRegistro(self.window, '640x160', 'Registro de Templates', self.http)
+
+    def busca_func(self):
+        BuscaFuncionario(self.window, '1225x300', 'Consulta de Funcionários')
+
+    def busca_cargos(self):
+        BuscaCargos(self.window, '625x300', 'Consulta de Cargos')
 
     def write_to_file(self, filename, data):
         with open(filename, 'wb') as f:
