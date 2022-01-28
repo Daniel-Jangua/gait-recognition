@@ -1,6 +1,9 @@
 import os, cv2, requests, time, shutil
+from datetime import datetime
 from threading import Thread
+from db_service import DbService
 from ftp_service import FTPService
+from knn import KNNClassifier
 
 class Inference(Thread):
 
@@ -9,8 +12,10 @@ class Inference(Thread):
         self.http = http
         self.main_window = main_window
         self.ftp = FTPService('192.168.0.109', 'esp', 'esp')
+        #self.db = DbService('database.gait')
     
     def run(self):
+        time.sleep(30)
         while(True):
             self.ftp.get_videos_and_clean()
             videos = os.listdir('./videos')
@@ -20,11 +25,30 @@ class Inference(Thread):
                 self.pre_process(folder, './videos/'+video)
                 descriptor = self.create_descriptors(folder)
                 shutil.rmtree(folder)
-                print(descriptor) #TODO: executar kNN e salvar resultado no banco de dados -> salvar video em assets/last_det.avi
-                os.remove('./videos/'+video)
                 if not descriptor:
-                    continue
+                  continue 
+                knn = KNNClassifier(1, str(descriptor), 100.0)
+                detected_id = knn.classify()
+                self.register_log(detected_id)
+                shutil.copyfile('./videos/'+video, './assets/last_det.avi')
+                os.remove('./videos/'+video)
+            if len(videos) > 0:
+                self.main_window.update_logs()
             time.sleep(30)
+
+    def register_log(self, id_func):
+        db = DbService('database.gait')
+        query = """SELECT nivel_acesso FROM funcionarios, cargos
+                    WHERE funcionarios.id_cargo = cargos.id_cargo
+                    AND id_funcionario = {}""".format(id_func)
+        _, result = db.execute_query(query)
+        n_acesso = result[0][0]
+        aut = 1
+        if n_acesso > 0:
+            aut = 0
+        query = """INSERT INTO log_det (id_funcionario, autorizado, data_det)
+                    VALUES ({}, {}, '{}')""".format(id_func, aut, str(datetime.now()).split('.')[0])
+        db.execute_query(query)
 
     def pre_process(self, folder, video):
         video_cap = cv2.VideoCapture(video)

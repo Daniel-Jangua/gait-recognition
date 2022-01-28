@@ -1,6 +1,4 @@
-from cgitb import text
 from tkinter import *
-import tkinter as tk
 from tkinter import ttk
 
 class TableGrid(Frame):

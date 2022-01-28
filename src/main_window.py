@@ -8,6 +8,8 @@ from tkvideo import tkvideo
 from busca_cargos import BuscaCargos
 from busca_func import BuscaFuncionario
 from form_cargo import FormCargo
+from inference import Inference
+from sobre import Sobre
 from table_grid import TableGrid
 from form_usuario import FormUsuario
 from form_funcionario import FormFuncionario
@@ -20,7 +22,7 @@ class MainWindow():
     def __init__(self, size, title, http):
         self.window = ThemedTk(theme='breeze')
         self.window.resizable(False, False)
-        self.video_name = './assets/last_det.mp4'
+        self.video_name = './assets/last_det.avi'
         self.log_service = Logs()
         self.http = http
 
@@ -57,7 +59,7 @@ class MainWindow():
         menubar.add_cascade(label='Consultas', menu=search_menu, font=('Arial', 11))
 
         about_menu = tk.Menu(menubar, tearoff=0)
-        about_menu.add_command(label='Sobre', font=('Arial', 11))
+        about_menu.add_command(label='Sobre', font=('Arial', 11), command=self.sobre)
         menubar.add_cascade(label='Ajuda', menu=about_menu, font=('Arial', 11))
         
         fr_feed = tk.Frame(tab_main)
@@ -84,7 +86,7 @@ class MainWindow():
         self.btn_refesh.image = photo
         self.btn_refesh.grid(row=6, column=0, pady=10)
 
-        img = Image.open('./assets/foto_cracha.png')
+        img = Image.open('./assets/avatar.png')
         img = img.resize((200,200), Image.ANTIALIAS)
         photo = ImageTk.PhotoImage(img)
         self.lbl_imagem = tk.Label(fr_feed, image=photo, width=200, height=200, borderwidth=1, relief='solid')
@@ -99,11 +101,18 @@ class MainWindow():
         lb_video.grid(row=1, column=1)
         fr_video.grid(row=0, column=1)
 
+        t = threading.Thread(target=self.create_thread_inference)
+        t.start()
+
         player = tkvideo(self.video_name, lb_video, loop = 1, size = (900, 500))
         player.play()
-        self.update_logs()
+        #self.update_logs()
 
         self.window.config(menu=menubar)
+    
+    def create_thread_inference(self):
+        thread_inference = Inference(self.http, self)
+        thread_inference.start()
 
     def forms_cad_usuario(self):
         FormUsuario(self.window, '450x150', 'Cadastro de Usuários')
@@ -123,9 +132,14 @@ class MainWindow():
     def busca_cargos(self):
         BuscaCargos(self.window, '625x300', 'Consulta de Cargos')
 
+    def sobre(self):
+        Sobre(self.window, '410x350', 'Sobre')
+
     def write_to_file(self, filename, data):
         with open(filename, 'wb') as f:
             f.write(data)
+    def mostrar_aviso(self):
+        messagebox.showerror('Alerta de Segurança', 'Atenção! Acesso não autorizado detectado.')
 
     def update_logs(self):
         label_status = {0 : 'NEGADO', 1 : 'AUTORIZADO'}
@@ -147,13 +161,17 @@ class MainWindow():
                 iid += 1
         if blob_img is not None and str(blob_img) != '' and str(blob_img) != 'NULL':
             self.write_to_file('./assets/foto_cracha.png', blob_img)
+        else:
+            with open('./assets/avatar.png', 'rb') as img:
+                f = img.read()
+                self.write_to_file('./assets/foto_cracha.png', bytearray(f))
         img = Image.open('./assets/foto_cracha.png')
         img = img.resize((200,200), Image.ANTIALIAS)
         photo = ImageTk.PhotoImage(img)
         self.lbl_imagem.configure(image=photo)
         self.lbl_imagem.image = photo
         if not autorizado:
-            t = threading.Thread(target=messagebox.showwarning, args=('Alerta de Segurança', 'Atenção! Acesso não autorizado detectado.',))
+            t = threading.Thread(target=self.mostrar_aviso)
             t.start()
 
 # if __name__ == '__main__':
