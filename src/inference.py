@@ -10,13 +10,14 @@ class Inference(Thread):
     def __init__(self, http, main_window):
         Thread.__init__(self)
         self.http = http
+        self.stop = False
         self.main_window = main_window
-        self.ftp = FTPService('192.168.0.109', 'esp', 'esp')
         #self.db = DbService('database.gait')
     
     def run(self):
+        self.ftp = FTPService('192.168.0.109', 'esp', 'esp')
         time.sleep(30)
-        while(True):
+        while(not self.stop):
             self.ftp.get_videos_and_clean()
             videos = os.listdir('./videos')
             for video in videos:

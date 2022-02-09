@@ -19,9 +19,10 @@ class FTPService():
                 handle = open('./videos/' + file.split('/')[-1], 'wb')
                 print('Getting file: ' + file)
                 if self.ftp.size(file) > 0:
-                    print('File {} has 0 bytes.'.format(file))
                     self.ftp.retrbinary('RETR %s' % file, handle.write)
-                print('Deleting file: ' + file)
+                    print('Deleting file: ' + file)
+                else:
+                    print('File {} has 0 bytes.'.format(file))
                 self.ftp.delete(file)
 
 if __name__ == '__main__':

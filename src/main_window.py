@@ -101,18 +101,17 @@ class MainWindow():
         lb_video.grid(row=1, column=1)
         fr_video.grid(row=0, column=1)
 
-        t = threading.Thread(target=self.create_thread_inference)
-        t.start()
+        self.create_thread_inference()
 
         player = tkvideo(self.video_name, lb_video, loop = 1, size = (900, 500))
         player.play()
         #self.update_logs()
-
+        self.window.protocol('WM_DELETE_WINDOW', self.on_closing)
         self.window.config(menu=menubar)
     
     def create_thread_inference(self):
-        thread_inference = Inference(self.http, self)
-        thread_inference.start()
+        self.thread_inference = Inference(self.http, self)
+        self.thread_inference.start()
 
     def forms_cad_usuario(self):
         FormUsuario(self.window, '450x150', 'Cadastro de Usuários')
@@ -140,6 +139,10 @@ class MainWindow():
             f.write(data)
     def mostrar_aviso(self):
         messagebox.showerror('Alerta de Segurança', 'Atenção! Acesso não autorizado detectado.')
+    
+    def on_closing(self):
+        self.thread_inference.stop = True
+        self.window.destroy()
 
     def update_logs(self):
         label_status = {0 : 'NEGADO', 1 : 'AUTORIZADO'}
