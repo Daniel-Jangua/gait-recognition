@@ -42,7 +42,7 @@ class FormRegistro(Toplevel):
             self.foldername = foldername
   
     def get_funcioanrios(self):
-        query = """SELECT id_funcionario, nome FROM funcionarios ORDER BY id_funcionario"""
+        query = """SELECT id_funcionario, nome FROM funcionarios WHERE id_funcionario != 5 ORDER BY id_funcionario"""
         _, result = self.db.execute_query(query)
         res = [str(row[0]) + '-' + row[1] for row in result]
         return res

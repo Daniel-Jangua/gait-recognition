@@ -45,6 +45,7 @@ class FormFuncionario(Toplevel):
     
     def get_cargos(self):
         query = """SELECT id_cargo, descricao FROM cargos
+                    WHERE id_cargo != 4
                     ORDER BY id_cargo"""
         _, result = self.db.execute_query(query)
         res = [str(row[0]) + '-' + row[1] for row in result]

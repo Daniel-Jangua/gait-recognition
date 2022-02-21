@@ -22,6 +22,7 @@ class BuscaCargos(Toplevel):
         query = """
             SELECT id_cargo, descricao, nivel_acesso
             FROM cargos
+            WHERE id_cargo != 4
             ORDER BY id_cargo
         """
         cur, result = self.db.execute_query(query)

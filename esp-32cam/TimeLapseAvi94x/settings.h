@@ -8,7 +8,7 @@ static const char devname[] = "desklens";         // name of your camera for mDN
 #define BlinkWithWrite 1
 
 // EDIT ssid and password
-const char* ssid = "Nilton";
+const char* ssid = "Nilton_Quartos";
 const char* password = "nilton640512";
 
 // reboot startup parameters here

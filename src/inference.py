@@ -28,7 +28,7 @@ class Inference(Thread):
                 shutil.rmtree(folder)
                 if not descriptor:
                   continue 
-                knn = KNNClassifier(1, str(descriptor), 100.0)
+                knn = KNNClassifier(1, str(descriptor), 0.8)
                 detected_id = knn.classify()
                 self.register_log(detected_id)
                 shutil.copyfile('./videos/'+video, './assets/last_det.avi')

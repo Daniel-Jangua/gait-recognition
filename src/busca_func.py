@@ -23,6 +23,7 @@ class BuscaFuncionario(Toplevel):
             SELECT funcionarios.id_funcionario, funcionarios.nome, cargos.descricao, cargos.nivel_acesso
             FROM funcionarios
             LEFT JOIN cargos ON funcionarios.id_cargo = cargos.id_cargo 
+            WHERE funcionarios.id_funcionario != 5
             ORDER BY funcionarios.id_funcionario
         """
         cur, result = self.db.execute_query(query)

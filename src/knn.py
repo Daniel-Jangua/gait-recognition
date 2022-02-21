@@ -36,6 +36,7 @@ class KNNClassifier():
             d3 = distance.euclidean(self.probe_lengths, gal_lengths)
             distances.append(((d1+d2+d3)/3, label))
         distances.sort()
+        print(distances[0][0])
         if distances[0][0] > self.threshold:
             return 5 #id_funcioanrio desconhecido
         lbls = []
